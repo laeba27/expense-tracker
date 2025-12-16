@@ -1,0 +1,326 @@
+{
+    "info": {
+        "name": "Expense Tracker - Auth APIs",
+        "description": "Complete authentication flow: Register → Verify → Login",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. REGISTER - Create Account",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "if (pm.response.code === 201) {",
+                            "  var jsonData = pm.response.json();",
+                            "  pm.environment.set('verification_token', jsonData.token);",
+                            "  pm.environment.set('user_id', jsonData.userId);",
+                            "  pm.environment.set('registered_email', pm.request.body.raw.split('\"email\":\"')[1].split('\"')[0]);",
+                            "}"
+                        ]
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"name\\\": \\\"Shivam Goyat\\\",\\n  \\\"email\\\": \\\"shivam@example.com\\\",\\n  \\\"phone\\\": \\\"9717809918\\\",\\n  \\\"password\\\": \\\"SecurePass123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "register"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "2. VERIFY - Click Email Link",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://localhost:3000/auth/verify?token={{verification_token}}",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "auth",
+                        "verify"
+                    ],
+                    "query": [
+                        {
+                            "key": "token",
+                            "value": "{{verification_token}}"
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "3. LOGIN - Get Auth Token",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "if (pm.response.code === 200) {",
+                            "  var jsonData = pm.response.json();",
+                            "  pm.environment.set('auth_token', jsonData.token);",
+                            "  console.log('✅ Auth token saved:', jsonData.token.substring(0, 50) + '...');",
+                            "}"
+                        ]
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"email\\\": \\\"shivam@example.com\\\",\\n  \\\"password\\\": \\\"SecurePass123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/login",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "login"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "TEST - Invalid Email",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"name\\\": \\\"Test\\\",\\n  \\\"email\\\": \\\"invalid-email\\\",\\n  \\\"phone\\\": \\\"9717809918\\\",\\n  \\\"password\\\": \\\"password123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "register"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "TEST - Short Password",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"name\\\": \\\"Test\\\",\\n  \\\"email\\\": \\\"test@example.com\\\",\\n  \\\"phone\\\": \\\"9717809918\\\",\\n  \\\"password\\\": \\\"123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "register"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "TEST - Invalid Phone",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"name\\\": \\\"Test\\\",\\n  \\\"email\\\": \\\"test@example.com\\\",\\n  \\\"phone\\\": \\\"123\\\",\\n  \\\"password\\\": \\\"password123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "register"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "TEST - Duplicate Email",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"name\\\": \\\"Another User\\\",\\n  \\\"email\\\": \\\"shivam@example.com\\\",\\n  \\\"phone\\\": \\\"9717809919\\\",\\n  \\\"password\\\": \\\"password123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/register",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "register"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "TEST - Login Before Verify",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"email\\\": \\\"newuser@example.com\\\",\\n  \\\"password\\\": \\\"password123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/login",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "login"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "TEST - Wrong Password",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\\n  \\\"email\\\": \\\"shivam@example.com\\\",\\n  \\\"password\\\": \\\"WrongPassword123\\\"\\n}"
+                },
+                "url": {
+                    "raw": "http://localhost:3000/api/auth/login",
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "3000",
+                    "path": [
+                        "api",
+                        "auth",
+                        "login"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "verification_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "auth_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "user_id",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "registered_email",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
